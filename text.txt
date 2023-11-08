@@ -1,0 +1,10 @@
+Server created
+The socket opened
+ioctl ok
+ setsockopt not ok !!!!!
+Bind ok
+Listen ok 
+CAP LS 302
+JOIN :
+
+3
