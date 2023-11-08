@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"server.hpp"
+#include"../include/server.hpp"
+#include"../utils/utils.hpp"
 
 typedef std::vector<pollfd>::iterator       pfd_iterator;
 std::vector<pollfd>  _pfds;
@@ -53,13 +54,15 @@ int Server::getPort(void) const
 }
 
 
-void new_connection(int nSocket)
+
+
+void Server::new_connection()
 {
     int         fd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
 
-    fd = accept(nSocket, (sockaddr *) &addr, &size);
+    fd = accept(this->_nSocket, (sockaddr *) &addr, &size);
     if (fd < 0)
         throw std::runtime_error("Error while accepting a new client!");
 
@@ -68,23 +71,53 @@ void new_connection(int nSocket)
     pollfd  pfd = {fd, POLLIN, 0};
     _pfds.push_back(pfd);
 
-}
-
-
-void manage_cl_msg(int fd, int nSocket)
-{     
-    char buffer[1024];
+    char buffer[2048];
     recv(fd, buffer, sizeof(buffer), 0);
-
     std::cout << buffer << std::endl;
-    for (pfd_iterator it = _pfds.begin(); it != _pfds.end(); it++)
-    {
-        if (it->fd != fd && it->fd != nSocket)
-            send(it->fd, buffer , strlen(buffer) , 0);            
-            
-    }
-    memset(&(buffer), 0, 1024);
+    //create instance client
+    Client cl = Client(fd);
+
+    // get User and Nick
+    get_client_infos(buffer, cl);
+    // send confirmation to client
+    //send(fd,":youssef!@127.0.0.1 NICK youssef\n", strlen(":youssef!@127.0.0.1 NICK youssef\n") , 0);
+
+    std::cout<< "here : " <<(int)cl.getNick()[5] << " : " << (int)cl.getNick()[4] <<std::endl;
+
+    std::string message = std::string("001 ") + cl.getNick() + " :Welcome " + cl.getNick() + " to the ft_irc network\n";//RPL_WELCOME(cl.getNick());
+    send(fd, message.c_str(), strlen(message.c_str()) , 0);
+    memset(&(buffer), 0, 2048);
+
 }
+
+
+
+
+
+void parser(char *buffer)
+{
+
+    if(strncmp(buffer, "PIN", 3) == 0)
+        std::cout << "there is a PING" << std::endl;
+    else
+        std::cout << "No ping : " << strncmp(buffer, "PING", 5) << std::endl;
+
+
+
+}
+
+ 
+void manage_cl_msg(int fd)
+{     
+    char buffer[2048];
+    recv(fd, buffer, sizeof(buffer), 0);
+    parser(buffer);
+    std::cout << buffer << std::endl;
+    memset(&(buffer), 0, 2048);
+}
+
+
+
 
 void Server::run(void)
 {
@@ -115,12 +148,11 @@ void Server::run(void)
                 if (it->fd == this->_nSocket)
                 {
                    // new_client_connect();
-                   //std::cout << "new connection" << std::endl;
-                   new_connection(this->_nSocket);
+                   this->new_connection();
                    break;
                 }
 
-                manage_cl_msg(it->fd , this->_nSocket);
+                manage_cl_msg(it->fd);
             }
         }
 
@@ -132,24 +164,17 @@ void Server::run(void)
 
 void Server::start(void)
 {
-    int nRet = 0;
 
     //Initialize the socket
     this->_nSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    
+
     if (this->_nSocket < 0)
-    {
-        std::cout << "The socket not opened" <<std::endl;
-    }
-    else
-    {
-        std::cout << "The socket opened" << std::endl;
-    }
+        throw std::runtime_error("Error while Creating server Socket!");
 
     //Initilize the environement for sockaddr structure
     srv.sin_family = AF_INET;
     srv.sin_port = htons(this->_port);
-    srv.sin_addr.s_addr = inet_addr("127.0.0.1");
+    srv.sin_addr.s_addr = inet_addr(SRV_IP);
     memset(&(srv.sin_zero), 0, 8);
 
     // making the socket NON-BLOCKING
@@ -160,34 +185,14 @@ void Server::start(void)
 
     if (fcntl(this->_nSocket, F_SETFL, O_NONBLOCK))
         throw std::runtime_error("Error while setting socket to NON-BLOCKING!");
-    {
-        std::cout << "ioctl ok"  << std::endl;
-    }
 
-    {
-        std::cout << " setsockopt not ok !!!!!"  << std::endl;
-    }
 
     //Bind the socket to the local port
-    nRet = bind(this->_nSocket, (sockaddr*)&srv, sizeof(sockaddr));
-    if (nRet < 0)
-    {
-        std::cout << "Bind not ok " << std::endl;
-    }
-    else
-    {
-        std::cout << "Bind ok"  << std::endl;
-    }
+    if (bind(this->_nSocket, (sockaddr*)&srv, sizeof(sockaddr)))
+        throw std::runtime_error("Error while bind!");
     
     // Listen the socket 
-    nRet = listen(this->_nSocket, 5);
-    if (nRet < 0)
-    {
-        std::cout << "Listen not ok " << std::endl;
-    }
-    else
-    {
-        std::cout << "Listen ok " << std::endl;
-    }
+    if (listen(this->_nSocket, 5))
+        throw std::runtime_error("Error while listen!");
 
 }

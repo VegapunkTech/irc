@@ -13,18 +13,8 @@
 #ifndef UTILS_HPP
  #define UTILS_HPP
 
-#include <sys/socket.h>
-#include <iostream>
-#include <netinet/in.h>
-#include <string>
-#include <arpa/inet.h>
-#include <sys/select.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <poll.h>
+#include "../include/client.hpp"
 
-
+void get_client_infos(const char *buffer, Client& cl);
 
 #endif
