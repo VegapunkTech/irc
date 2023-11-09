@@ -11,17 +11,20 @@
 /* ************************************************************************** */
 
 #include"utils.hpp"
+#include"../include/server.hpp"
 
-void get_client_infos(const char *buffer, Client& cl)
+
+void Server::get_client_infos(const char *buffer, int fd)
 {
+    this->client_map[fd].setIdSocket(fd);
     std::string bufferstr(buffer);
 
     size_t posNick = bufferstr.find("NICK ");
     if (posNick != std::string::npos) {
         size_t posNewline = bufferstr.find('\n', posNick);
         if (posNewline != std::string::npos) {
-            std::string nick = bufferstr.substr(posNick + 5, posNewline - (posNick + 5));
-            cl.setNick(nick);
+            std::string nick = bufferstr.substr(posNick + 5, posNewline - (posNick + 6));
+            this->client_map[fd].setNick(nick);
         }
     }
 
@@ -33,8 +36,9 @@ void get_client_infos(const char *buffer, Client& cl)
             size_t test = user.find(' ', 0);
             if (test != std::string::npos) {
                 std::string user1 = user.substr(0, test);
-                cl.setUser(user1);
+                this->client_map[fd].setUser(user1);
             }
         }
     }
+
 }

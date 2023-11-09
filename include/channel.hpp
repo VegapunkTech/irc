@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
+/*   channel.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: youssefboughanmi <youssefboughanmi@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,36 +11,37 @@
 /* ************************************************************************** */
 
 
-#ifndef CLIENT_HPP
- #define CLIENT_HPP  
+#ifndef CHANNEL_HPP
+ #define CHANNEL_HPP  
 
 #include <string>
 #include <cstddef>
 #include <iostream>
+#include <set>
 
-class Client 
+class Channel 
 {
 
     private:
-        std::string _user;
-        std::string _nick;
+        std::string _name;
+        std::set<int> _client_list;
 
-        int _id_socket;
-        Client();
 
     public:
-        Client(int id_socket);
+        Channel(std::string name);
+        Channel();
+        ~Channel(void);
 
         // getters
-        std::string getUser() ; 
-        std::string getNick() ;
-        int getId_socket() ;
+        std::string getName(); 
+        std::set<int> getClient_list();
 
-
-        // setters
-        void setUser(std::string user);
-        void setNick(std::string nick);
-        void setIdSocket(int id_socket);
+        //setters
+        void setName(std::string name);
+        
+        //append client
+        void append_client(int id_socket);
+        void delete_client(int id_socket);
 
 };
 

@@ -58,6 +58,7 @@ int Server::getPort(void) const
 
 void Server::new_connection()
 {
+
     int         fd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
@@ -67,51 +68,124 @@ void Server::new_connection()
         throw std::runtime_error("Error while accepting a new client!");
 
     // including the client fd in the poll
-
     pollfd  pfd = {fd, POLLIN, 0};
     _pfds.push_back(pfd);
 
+    //recv first msg from the client
     char buffer[2048];
     recv(fd, buffer, sizeof(buffer), 0);
-    std::cout << buffer << std::endl;
-    //create instance client
-    Client cl = Client(fd);
 
-    // get User and Nick
-    get_client_infos(buffer, cl);
-    // send confirmation to client
-    //send(fd,":youssef!@127.0.0.1 NICK youssef\n", strlen(":youssef!@127.0.0.1 NICK youssef\n") , 0);
+    //create instance client and get User and Nick
+    this->get_client_infos(buffer, fd);
 
-    std::cout<< "here : " <<(int)cl.getNick()[5] << " : " << (int)cl.getNick()[4] <<std::endl;
+    //send welcome msg 
+    std::string msg RPL_WELCOME(this->client_map[fd].getNick());
 
-    std::string message = std::string("001 ") + cl.getNick() + " :Welcome " + cl.getNick() + " to the ft_irc network\n";//RPL_WELCOME(cl.getNick());
-    send(fd, message.c_str(), strlen(message.c_str()) , 0);
+    std::cout << std::endl << msg << std::endl;
+    send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
+
+    //reset buffer
     memset(&(buffer), 0, 2048);
 
 }
 
+std::string Server::format_users(std::set<int> set_client)
+{
+    std::set<int>::iterator it;
+    std::string format_users("");
+
+    for (it = set_client.begin(); it != set_client.end(); ++it) 
+    {
+        format_users+= this->client_map[*it].getNick() + " ";
+    }
+    return(format_users);
+}
+
+void Server::join(std::string channel_name, int id_socket)
+{
+    std::set<int> set_client;
+    std::set<int>::iterator it;
+
+    //check if channel name exist 
+    if(this->channel_map.find(channel_name) !=  this->channel_map.end())
+        this->channel_map[channel_name].append_client(id_socket);
+
+    //else created 
+    else
+    {
+        this->channel_map[channel_name].setName(channel_name);
+        this->channel_map[channel_name].append_client(id_socket);
+    }
+
+    //send messages to clients
+    set_client = this->channel_map[channel_name].getClient_list();
+
+    for (it = set_client.begin(); it != set_client.end(); ++it) 
+    {
+        std::string msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name) + \
+                         RPL_NAMREPLY(this->client_map[id_socket].getUser(), channel_name, this->format_users(set_client)) + \
+                            RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
+        send(*it , msg.c_str(),  msg.length(), 0);
+        std::cout << msg << std::endl;
+    }
+}
 
 
-
-
-void parser(char *buffer)
+void Server::privmsg(std::string channel_name, int id_socket, char *buffer)
 {
 
-    if(strncmp(buffer, "PIN", 3) == 0)
-        std::cout << "there is a PING" << std::endl;
-    else
-        std::cout << "No ping : " << strncmp(buffer, "PING", 5) << std::endl;
+    std::set<int> set_client;
+    std::set<int>::iterator it;
+
+    set_client = this->channel_map[channel_name].getClient_list();
+
+    for (it = set_client.begin(); it != set_client.end(); ++it) 
+    {
+        if(*it == id_socket)
+            continue;
+
+        std::string msg = RPL_PRIVMSG(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , buffer);
+        send(*it , msg.c_str(),  msg.length(), 0);
+        std::cout << msg << std::endl;
+    }
+}
 
 
+void Server::parser(char *buffer, int fd)
+{
+    if(strncmp(buffer, "JOIN ", 5) == 0)
+    {
+        std::string bufferstr(buffer);
+        size_t posNewline = bufferstr.find('\n', 5);
+        if (posNewline != std::string::npos) {
+            std::string channelname = bufferstr.substr(6, posNewline - 7);
+            
+            this->join(channelname, fd);
+        }
+    }
+
+
+    if(strncmp(buffer, "PRIVMSG ", 8) == 0) {
+
+        std::string bufferstr(buffer);
+
+        size_t posspace = bufferstr.find(' ', 9);
+        if (posspace != std::string::npos) {
+
+            std::string channelname = bufferstr.substr(9, posspace - 9);
+            this->privmsg(channelname, fd, buffer);
+            
+        }
+    }
 
 }
 
  
-void manage_cl_msg(int fd)
+void Server::manage_cl_msg(int fd)
 {     
     char buffer[2048];
     recv(fd, buffer, sizeof(buffer), 0);
-    parser(buffer);
+    this->parser(buffer, fd);
     std::cout << buffer << std::endl;
     memset(&(buffer), 0, 2048);
 }
@@ -152,7 +226,7 @@ void Server::run(void)
                    break;
                 }
 
-                manage_cl_msg(it->fd);
+                this->manage_cl_msg(it->fd);
             }
         }
 

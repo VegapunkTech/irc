@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.cpp                                         :+:      :+:    :+:   */
+/*   channel.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: youssefboughanmi <youssefboughanmi@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,49 +10,51 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"../include/client.hpp"
+#include"../include/channel.hpp"
 
-Client::Client( void )
+Channel::Channel( void )
 {
-    std::cout << "Client deleted" << std::endl;
+    std::cout << "Channel Created" << std::endl;
     return;
 }
 
-
-Client::Client(const int id_socket) :_id_socket(id_socket)
+Channel::~Channel(void)
 {
-    std::cout << "Client created" << std::endl;
+    std::cout << "Channel deleted" << std::endl;
+    return;
+}
+
+Channel::Channel(std::string name) :_name(name)
+{
+    std::cout << "Channel "<< name << " created" << std::endl;
     return;
 }
 
 // getters
-std::string Client::getUser()  
+std::string Channel::getName()  
 {
-    return(this->_user);
+    return(this->_name);
 }
 
-std::string Client::getNick() 
+std::set<int> Channel::getClient_list() 
 {
-    return(this->_nick);
-}
-        
-int Client::getId_socket() 
-{
-    return (this->_id_socket);
+    return(this->_client_list);
 }
 
-// setters
-void Client::setUser(std::string user) 
+//setters
+void Channel::setName(std::string name)
 {
-    this->_user = user;
+    this->_name = name;
 }
 
-void Client::setNick(std::string nick) 
+//append client
+void Channel::append_client(int id_socket)
 {
-    this->_nick = nick;
+    this->_client_list.insert(id_socket);
 }
 
-void Client::setIdSocket(int id_socket) 
+//append client
+void Channel::delete_client(int id_socket)
 {
-    this->_id_socket = id_socket;
+    this->_client_list.erase(id_socket);
 }

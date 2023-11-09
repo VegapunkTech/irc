@@ -24,16 +24,21 @@ class Client
     private:
         std::string _user;
         std::string _nick;
+        std::string _source;
 
         int _id_socket;
-        Client();
 
     public:
         Client(int id_socket);
+        Client();
+
+        ~Client(void);
+        Client(Client const & rhs);
+        Client & operator=(Client const & rhs);
 
         // getters
-        std::string getUser() ; 
-        std::string getNick() ;
+        std::string getUser(); 
+        std::string getNick();
         int getId_socket() ;
 
 

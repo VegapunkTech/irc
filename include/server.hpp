@@ -14,6 +14,8 @@
  #define SERVER_HPP
 
 #include"client.hpp"
+#include"channel.hpp"
+#include"../utils/rpl.hpp"
 #include <sys/socket.h>
 #include <iostream>
 #include <netinet/in.h>
@@ -28,11 +30,10 @@
 #include <cstring>
 #include <vector>
 #include <list>
+#include <map>
+#include <set>
 
 #define SRV_IP "127.0.0.1"
-
-#define RPL_WELCOME(User)                               std::string("001 ") + User + " :Welcome " + User + " to the ft_irc network\n"
-#define RPL_PING(src)                                   std::string(":") + src + "@localhost PONG :localhost"
 
 
 class Server
@@ -52,12 +53,21 @@ class Server
         Server(void);
         void    start(void);
         void    new_connection();
+        void    parser(char *buffer, int fd);
+        void    manage_cl_msg(int fd);
+        std::string format_users(std::set<int> client_list);
+        void get_client_infos(const char *buffer, int fd);
 
-        
+        //Command
+        void    privmsg(std::string Channel, int id_socket, char *buffer);
+        void    join(std::string channel_name, int id_socket);
+
+
         int _nSocket;
         int _port;
         struct sockaddr_in srv;
-        std::list<Client> client_list;
+        std::map<int, Client> client_map;
+        std::map<std::string, Channel> channel_map;
 
         
     

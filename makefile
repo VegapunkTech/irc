@@ -2,7 +2,8 @@ NAME = ircserv
 
 .PHONY: all, fclean, re
 
-SRCS = src/server.cpp src/main.cpp src/client.cpp utils/get_client_infos.cpp
+SRCS = src/server.cpp src/main.cpp src/client.cpp utils/get_client_infos.cpp \
+		src/channel.cpp
 
 OBJS = $(SRCS:.c=.o)
 
