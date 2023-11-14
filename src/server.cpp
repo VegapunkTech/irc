@@ -54,8 +54,6 @@ int Server::getPort(void) const
 }
 
 
-
-
 void Server::new_connection()
 {
 
@@ -87,97 +85,9 @@ void Server::new_connection()
     //reset buffer
     memset(&(buffer), 0, 2048);
 
-}
-
-std::string Server::format_users(std::set<int> set_client)
-{
-    std::set<int>::iterator it;
-    std::string format_users("");
-
-    for (it = set_client.begin(); it != set_client.end(); ++it) 
-    {
-        format_users+= this->client_map[*it].getNick() + " ";
-    }
-    return(format_users);
-}
-
-void Server::join(std::string channel_name, int id_socket)
-{
-    std::set<int> set_client;
-    std::set<int>::iterator it;
-
-    //check if channel name exist 
-    if(this->channel_map.find(channel_name) !=  this->channel_map.end())
-        this->channel_map[channel_name].append_client(id_socket);
-
-    //else created 
-    else
-    {
-        this->channel_map[channel_name].setName(channel_name);
-        this->channel_map[channel_name].append_client(id_socket);
-    }
-
-    //send messages to clients
-    set_client = this->channel_map[channel_name].getClient_list();
-
-    for (it = set_client.begin(); it != set_client.end(); ++it) 
-    {
-        std::string msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name) + \
-                         RPL_NAMREPLY(this->client_map[id_socket].getUser(), channel_name, this->format_users(set_client)) + \
-                            RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
-        send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
-    }
-}
-
-
-void Server::privmsg(std::string channel_name, int id_socket, char *buffer)
-{
-
-    std::set<int> set_client;
-    std::set<int>::iterator it;
-
-    set_client = this->channel_map[channel_name].getClient_list();
-
-    for (it = set_client.begin(); it != set_client.end(); ++it) 
-    {
-        if(*it == id_socket)
-            continue;
-
-        std::string msg = RPL_PRIVMSG(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , buffer);
-        send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
-    }
-}
-
-
-void Server::parser(char *buffer, int fd)
-{
-    if(strncmp(buffer, "JOIN ", 5) == 0)
-    {
-        std::string bufferstr(buffer);
-        size_t posNewline = bufferstr.find('\n', 5);
-        if (posNewline != std::string::npos) {
-            std::string channelname = bufferstr.substr(6, posNewline - 7);
-            
-            this->join(channelname, fd);
-        }
-    }
-
-
-    if(strncmp(buffer, "PRIVMSG ", 8) == 0) {
-
-        std::string bufferstr(buffer);
-
-        size_t posspace = bufferstr.find(' ', 9);
-        if (posspace != std::string::npos) {
-
-            std::string channelname = bufferstr.substr(9, posspace - 9);
-            this->privmsg(channelname, fd, buffer);
-            
-        }
-    }
-
+    //a gerer plus tard le mode user au moment de la connection
+    recv(fd, buffer, sizeof(buffer), 0);
+    memset(&(buffer), 0, 2048);
 }
 
  
@@ -229,11 +139,9 @@ void Server::run(void)
                 this->manage_cl_msg(it->fd);
             }
         }
-
-
-
     }
 }
+
 
 
 void Server::start(void)

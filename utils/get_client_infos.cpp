@@ -40,5 +40,4 @@ void Server::get_client_infos(const char *buffer, int fd)
             }
         }
     }
-
 }

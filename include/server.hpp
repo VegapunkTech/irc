@@ -25,6 +25,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <poll.h>
 #include <cstring>
@@ -55,8 +56,16 @@ class Server
         void    new_connection();
         void    parser(char *buffer, int fd);
         void    manage_cl_msg(int fd);
-        std::string format_users(std::set<int> client_list);
+        std::string format_users(std::set<int> client_list, std::set<int> set_operator);
         void get_client_infos(const char *buffer, int fd);
+
+        //Mode
+        void    mode(std::string channel_name, std::string signe, char mode , std::string arg, int fd);
+        void    run_mode_l(std::string channel_name, std::string signe , unsigned int arg);
+        void    run_mode_o(std::string channel_name, std::string signe , std::string arg, int id_socket);
+        void    run_mode_k(std::string channel_name, std::string signe , std::string arg, int id_socket);
+        void    run_mode_t(std::string channel_name, std::string signe, int id_socket);
+        void    run_mode_i(std::string channel_name, std::string signe, int id_socket);
 
         //Command
         void    privmsg(std::string Channel, int id_socket, char *buffer);

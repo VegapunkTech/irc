@@ -33,4 +33,18 @@
 
 #define RPL_PRIVMSG(Nick, User , buffer)              (std::string(":") + Nick + "!" + User + "@localhost " + buffer + "\r\n")
 
+
+/*MODE*/
+
+// :nicks!~youssef@66.225.88.79.rev.sfr.net MODE #re +i
+#define RPL_MODE_I(Nick, User, Channel , Signe)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"i \r\n")    
+#define RPL_MODE_T(Nick, User, Channel , Signe)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"t \r\n") 
+
+//:youssef_!~youssef@79.88.225.66 MODE #kks +k pass
+#define RPL_MODE_K(Nick, User, Channel , Signe, arg)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"k " + arg +"\r\n") 
+
+//:youssef!~youssef@79.88.225.66 MODE #re -o t1
+#define RPL_MODE_O(Nick, User, Channel , Signe, arg)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"o " + arg +"\r\n") 
+
+
 #endif
