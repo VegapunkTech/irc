@@ -13,11 +13,8 @@
 #include"../include/server.hpp"
 #include"../utils/utils.hpp"
 
-typedef std::vector<pollfd>::iterator       pfd_iterator;
-std::vector<pollfd>  _pfds;
 
-
-Server::Server(int port) : _port(port)
+Server::Server(int port, std::string pass) : _port(port), _pass(pass)
 {
     std::cout << "Server created" << std::endl;
     return;
@@ -52,43 +49,11 @@ int Server::getPort(void) const
 {
     return(this->_port);
 }
-
-
-void Server::new_connection()
+std::string Server::getPass(void) const
 {
-
-    int         fd;
-    sockaddr_in addr = {};
-    socklen_t   size = sizeof(addr);
-
-    fd = accept(this->_nSocket, (sockaddr *) &addr, &size);
-    if (fd < 0)
-        throw std::runtime_error("Error while accepting a new client!");
-
-    // including the client fd in the poll
-    pollfd  pfd = {fd, POLLIN, 0};
-    _pfds.push_back(pfd);
-
-    //recv first msg from the client
-    char buffer[2048];
-    recv(fd, buffer, sizeof(buffer), 0);
-
-    //create instance client and get User and Nick
-    this->get_client_infos(buffer, fd);
-
-    //send welcome msg 
-    std::string msg RPL_WELCOME(this->client_map[fd].getNick());
-
-    std::cout << std::endl << msg << std::endl;
-    send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
-
-    //reset buffer
-    memset(&(buffer), 0, 2048);
-
-    //a gerer plus tard le mode user au moment de la connection
-    recv(fd, buffer, sizeof(buffer), 0);
-    memset(&(buffer), 0, 2048);
+    return(this->_pass);
 }
+
 
  
 void Server::manage_cl_msg(int fd)
@@ -100,30 +65,27 @@ void Server::manage_cl_msg(int fd)
     memset(&(buffer), 0, 2048);
 }
 
-
-
-
 void Server::run(void)
 {
     this->start();
 
     pollfd srv = {this->_nSocket, POLLIN, 0};
-    _pfds.push_back(srv);
+    this->_pfds.push_back(srv);
 
     //Keep waiting for new requests and proceed as per the request
     while(1)
     {
-        poll(_pfds.begin().base(), _pfds.size(), -1);
+        poll(this->_pfds.begin().base(), this->_pfds.size(), -1);
 
         //boucler sur tout les pollfd 
-        for (pfd_iterator it = _pfds.begin(); it != _pfds.end(); it++)
+        for (pfd_iterator it = this->_pfds.begin(); it != this->_pfds.end(); it++)
         {
             if (it->revents == 0)
                 continue;
 
             if ((it->revents & POLLHUP) == POLLHUP)
             {
-                //client_disconnect(it->fd);
+                this->client_disconnect(it->fd);
                 break;
             }
 
@@ -131,7 +93,7 @@ void Server::run(void)
             {
                 if (it->fd == this->_nSocket)
                 {
-                   // new_client_connect();
+                   // new client connect;
                    this->new_connection();
                    break;
                 }

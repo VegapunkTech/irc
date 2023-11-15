@@ -17,6 +17,7 @@
 #include <string>
 #include <cstddef>
 #include <iostream>
+#include <set>
 
 class Client 
 {
@@ -24,9 +25,10 @@ class Client
     private:
         std::string _user;
         std::string _nick;
-        std::string _source;
 
         int _id_socket;
+        std::set<std::string>  set_channel;
+
 
     public:
         Client(int id_socket);
@@ -40,12 +42,17 @@ class Client
         std::string getUser(); 
         std::string getNick();
         int getId_socket() ;
+        std::set<std::string> getSet_channel();
 
 
         // setters
         void setUser(std::string user);
         void setNick(std::string nick);
         void setIdSocket(int id_socket);
+
+
+        //append channel
+        void append_channel(std::string channel_name);
 
 };
 

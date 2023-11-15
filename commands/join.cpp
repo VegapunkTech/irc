@@ -40,7 +40,10 @@ void Server::join(std::string channel_name, int id_socket)
 
     //check if channel name exist 
     if(this->channel_map.find(channel_name) !=  this->channel_map.end())
+    {
         this->channel_map[channel_name].append_client(id_socket);
+        this->client_map[id_socket].append_channel(channel_name);
+    }
 
     //else created 
     else
@@ -48,6 +51,7 @@ void Server::join(std::string channel_name, int id_socket)
         this->channel_map[channel_name].setName(channel_name);
         this->channel_map[channel_name].append_client(id_socket);
         this->channel_map[channel_name].append_client_operator(id_socket);
+        this->client_map[id_socket].append_channel(channel_name);
     }
 
     //send messages to clients

@@ -46,5 +46,21 @@
 //:youssef!~youssef@79.88.225.66 MODE #re -o t1
 #define RPL_MODE_O(Nick, User, Channel , Signe, arg)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"o " + arg +"\r\n") 
 
+//:youssef!~youssef@79.88.225.66 MODE #re +l 100
+#define RPL_MODE_L(Nick, User, Channel , Signe, arg)                 (std::string(":") + Nick + "!~" + User + "@localhost MODE #" + Channel +" " + Signe +"l " + arg +"\r\n") 
+
+//:localhost 464  :Password incorrect.
+#define RPL_WRONG_PASS()                 (":localhost 464  :Password incorrect.\r\n") 
+
+//::youssef_!~youssef@79.88.225.66 QUIT :Quit: leaving
+#define RPL_EXIT(Nick, User)                 (std::string(":") + Nick + "!~" + User + "@localhost QUIT :Quit: leaving\r\n");
+
+//:127.0.0.1 PONG 127.0.0.1 :127.0.0.1
+
+#define RPL_PONG()                 (":127.0.0.1 PONG 127.0.0.1 :127.0.0.1\r\n");
+
+
+//:youssef!~youssef@66.225.88.79.rev.sfr.net KICK #re youssef_ :youssef
+#define RPL_KICK(Nick, User, msg)                 (std::string(":") + Nick + "!~" + User + " "+ msg +"\r\n");
 
 #endif

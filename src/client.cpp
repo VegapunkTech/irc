@@ -63,6 +63,11 @@ int Client::getId_socket()
     return (this->_id_socket);
 }
 
+std::set<std::string> Client::getSet_channel()
+{
+    return (this->set_channel);
+}
+
 // setters
 void Client::setUser(std::string user) 
 {
@@ -78,4 +83,10 @@ void Client::setNick(std::string nick)
 void Client::setIdSocket(int id_socket) 
 {
     this->_id_socket = id_socket;
+}
+
+//append channel
+void Client::append_channel(std::string channel_name)
+{
+    this->set_channel.insert(channel_name);
 }

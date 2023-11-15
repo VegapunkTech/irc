@@ -77,10 +77,40 @@ void Server::parser(char *buffer, int fd)
                             this->mode(channelname, signe, command[i] , arg , fd);
                         else
                             this->mode(channelname, signe, command[i] , std::string(""), fd);
-
                     }
                 }
             }
+        }
+    }
+
+    //QUIT
+    if(strncmp(buffer, "QUIT " , 5) == 0)
+        this->client_disconnect(fd);
+
+
+    //PING
+    if(strncmp(buffer, "PING " , 5) == 0)
+    {
+        std::string msg = RPL_PONG();
+        send(fd , msg.c_str(),  msg.length(), 0);
+    }
+
+    //kick
+
+    if(strncmp(buffer, "KICK ", 5) == 0) {
+    
+        std::string bufferstr(buffer);
+
+        size_t posspace = bufferstr.find(' ', 6);
+        if (posspace != std::string::npos) 
+        {
+            std::string channelname = bufferstr.substr(6, posspace - 6);
+            size_t posspace2 = bufferstr.find(' ', posspace+1);
+            if (posspace2 != std::string::npos) 
+            {
+                std::string pseudo = bufferstr.substr(posspace+1, posspace2 - posspace-1);
+                this->kick(channelname, pseudo,bufferstr , fd);
+            }   
         }
     }
 }

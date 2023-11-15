@@ -13,7 +13,12 @@
 #ifndef UTILS_HPP
  #define UTILS_HPP
 
+#include <poll.h>
+#include <vector>
+
 #include "../include/client.hpp"
+
+typedef std::vector<pollfd>::iterator       pfd_iterator;
 
 void get_client_infos(const char *buffer, Client& cl);
 
