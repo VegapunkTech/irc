@@ -25,6 +25,7 @@ class Channel
     private:
         std::string _name;
         std::string _pass;
+        std::string _topic;
         unsigned int _limit;
         std::set<int> _client_list;
         std::set<int> _client_list_invited;

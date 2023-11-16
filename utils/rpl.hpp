@@ -18,20 +18,35 @@
 
 /*
 >> :nick!monkey@localhost JOIN :#test
+>> :localhost 332 youssef_ #re :lol
 >> :localhost 353 monkey = #test :@nick
 >> :localhost 366 monkey #test :End of /NAMES list.
 
 */
 
-#define RPL_JOIN(Nick, User, Channel)                 (std::string(":") + Nick + "!" + User + "@localhost JOIN :#" + Channel + "\r\n")                                                 
+#define RPL_JOIN(Nick, User, Channel)            (std::string(":") + Nick + "!" + User + "@localhost JOIN :#" + Channel + "\r\n")                                                
 #define RPL_NAMREPLY(User, Channel, Users)            (std::string(":localhost 353 ") + User + " = " + Channel + " :" + Users + "\r\n")
 #define RPL_ENDOFNAMES(User, Channel)                 (std::string(":localhost 366 ") + User + " #" + Channel + " :End of /NAMES list.\r\n")
 
 /*
 :test!youssef@localhost PRIVMSG #Channel :salut
+:irc.rizon.club 404 monkey #ok :Cannot send to channel
 */
 
-#define RPL_PRIVMSG(Nick, User , buffer)              (std::string(":") + Nick + "!" + User + "@localhost " + buffer + "\r\n")
+#define RPL_PRIVMSG_CHANNEL(Nick, User , buffer)              (std::string(":") + Nick + "!" + User + "@localhost " + buffer + "\r\n")
+#define RPL_PRIVMSG_NO_CHANNEL(Nick, Channel)                 (std::string(":localhost 404 ") + Nick + " #" + Channel + " :Cannot send to channel\r\n")  
+
+
+/*
+:monkey!~monkey@lfbn-nic-1-511-105.w90-116.abo.wanadoo.fr PRIVMSG nick :test
+:adrift.sg.quakenet.org 401 Nick pseudo :No such nick
+*/
+
+
+#define RPL_PRIVMSG_CLIENT(Nick, User , buffer)              (std::string(":") + Nick + "!~" + User + "@localhost " + buffer + "\r\n")
+#define RPL_PRIVMSG_NO_CLIENT(Nick, Client)                  (std::string(":localhost 401 ") + Nick + " " + Client + " :No such nick\r\n")
+
+
 
 
 /*MODE*/
@@ -70,7 +85,30 @@
 
 #define RPL_INVITE_NO(Nick, Invite)                        (std::string(":127.0.0.1 401 ") + Nick + " " + Invite + " :No such nick\r\n");
 #define RPL_INVITE_SEND(Nick, Invite, Channel)             (std::string(":127.0.0.1 341 ") + Nick + " " + Invite + " #"+ Channel + "\r\n")
-#define RPL_INVITE_RECV(Nick, User, Invite ,Channel)       (std::string(":") + Nick + "!~" + User + "@localhost INVITE " + Invite + " "+ Channel +"\r\n") 
+#define RPL_INVITE_RECV(Nick, User, Invite ,Channel)       (std::string(":") + Nick + "!~" + User + "@localhost INVITE " + Invite + " #"+ Channel +"\r\n")
+
+
+//:tngnet.nl.quakenet.org 442 tes2 #res :You're not on that channel
+//:tngnet.nl.quakenet.org 482 tes2 #res :You're not channel operator
+//:tes2!~youssef@79.88.225.66 TOPIC #res :lol
+
+
+#define RPL_TOPIC_NO_CHANNEL(Nick, Channel)                (std::string(":127.0.0.1 442 ") + Nick + " #" + Channel +" :You're not on that channel\r\n")
+#define RPL_TOPIC_NO_OP(Nick, Channel)                     (std::string(":127.0.0.1 482 ") + Nick + " #" + Channel +" :You're not channel operator\r\n")
+#define RPL_TOPIC(Nick, User, Topic ,Channel)              (std::string(":") + Nick + "!~" + User + "@localhost TOPIC #" + Channel + " :"+ Topic +"\r\n")             
+
+/*part*/
+//:tes2!~youssef@66.225.88.79.rev.sfr.net PART #re
+#define RPL_PART(Nick, User, buffer)              (std::string(":") + Nick + "!~" + User + "@localhost "+ buffer +"\r\n")             
+
+
+/*Nick*/
+//:irc.uworld.se 433 monkey mon :Nickname is already in use.
+//:monkey!~monkey@Rizon-5467865.w90-116.abo.wanadoo.fr NICK :mon
+
+#define RPL_NICK_EXIST(Nick, New_nick)          (std::string(":127.0.0.1 433 ") + Nick + " " + New_nick +" :Nickname is already in use.\r\n")
+#define RPL_NICK(Nick, User, New_nick)          (std::string(":") + Nick + "!~" + User + "@localhost NICK :" + New_nick +"\r\n")             
+
 
 
 #endif

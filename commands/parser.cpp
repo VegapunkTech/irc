@@ -32,12 +32,21 @@ void Server::parser(char *buffer, int fd)
     //PRIVMSG
     if(strncmp(buffer, "PRIVMSG ", 8) == 0) 
     {
-        size_t posspace = bufferstr.find(' ', 9);
-        if (posspace != std::string::npos) 
-        {
-            std::string channelname = bufferstr.substr(9, posspace - 9);
-            this->privmsg(channelname, fd, buffer);
-            
+        size_t posspace = bufferstr.find(' ', 8);
+        if (posspace != std::string::npos) {
+
+            std::string test = bufferstr.substr(8, posspace - 8);
+            if (test[0] == '#')
+            {
+                std::string channelname = test;
+                channelname.erase(channelname.begin());
+                this->privmsg_channel(channelname, fd, buffer);
+            }
+            else
+            {
+                std::string pseudo = test;
+                this->privmsg_client(pseudo, fd, buffer);
+            }
         }
     }
 
@@ -137,6 +146,68 @@ void Server::parser(char *buffer, int fd)
                 std::string channelname = bufferstr.substr(posspace+2, posspace2 - posspace-2);
                 this->invite( channelname,pseudo , fd);
             }
+        }
+    }
+
+    //TOPIC
+    if(strncmp(buffer, "TOPIC ", 6) == 0) 
+    {
+        std::string bufferstr(buffer);
+
+        size_t posspace = bufferstr.find(' ', 7);
+        if (posspace != std::string::npos) {
+
+            std::string channelname = bufferstr.substr(7, posspace - 7);
+
+            size_t posspace2 = bufferstr.find('\r', posspace+1);
+            if (posspace2 != std::string::npos) 
+            {
+                std::string topic = bufferstr.substr(posspace+2, posspace2 - posspace-2);
+                this->topic(channelname, topic , fd);
+            }
+        }
+    }
+
+
+    //PART
+    if(strncmp(buffer, "PART ", 5) == 0)
+    {
+        std::string bufferstr(buffer);
+
+        size_t posspace = bufferstr.find(' ', 5);
+        if (posspace != std::string::npos) 
+        {
+            
+            std::string channelname = bufferstr.substr(5, posspace - 5);
+            if (channelname[0] == '#')
+            {
+                channelname.erase(channelname.begin());
+                this->part(channelname, fd , buffer);
+            }
+        }
+        else
+        {
+            size_t posspace = bufferstr.find('\r', 5);
+            std::string channelname = bufferstr.substr(5, posspace - 5);
+            if (channelname[0] == '#')
+            {
+                channelname.erase(channelname.begin());
+                this->part(channelname, fd , buffer);
+            }
+
+        }
+
+    }
+
+    //Nick
+       if(strncmp(buffer, "NICK ", 5) == 0)
+    {
+        size_t posspace = bufferstr.find('\r', 5);
+        if (posspace != std::string::npos) 
+        {
+            std::string nick = bufferstr.substr(5, posspace - 5);
+            if (nick[0] != '\0')
+                this->nick(nick, fd);
         }
     }
 }

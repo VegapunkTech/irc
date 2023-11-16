@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quit.cpp                                          :+:      :+:    :+:   */
+/*   nick.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: youssefboughanmi <youssefboughanmi@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,41 +10,32 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include"../include/server.hpp"
 #include"../utils/utils.hpp"
 
 
-
-std::set<int>   Server::getClientChannel(int fd)
+void Server::nick(std::string new_nick, int fd)
 {
-    std::set<std::string>   channel_set = this->client_map[fd].getSet_channel();
-    std::set<int>           set_all_client;
-    std::set<int>           set_client;
-
-
-    for (std::set<std::string>::iterator it = channel_set.begin(); it != channel_set.end(); ++it)
+    std::cout << "YES" << std::endl;
+    //same nick
+    if(this->client_map[fd].getNick() == new_nick)
+        return;
+    if(Nick_exist(new_nick, fd))
     {
-        set_client = this->channel_map[*it].getClient_list();
-        set_all_client.insert(set_client.begin(), set_client.end());
+        std::string msg = RPL_NICK_EXIST(this->client_map[fd].getNick(), new_nick);
+        send(fd, msg.c_str(), msg.length(), 0);
+        return;        
     }
-    return(set_all_client);
-}
+    std::cout << "YES" << std::endl;
 
-void Server::client_disconnect(int fd)
-{
-    /* set rpl */
-    std::string msg = RPL_EXIT(this->client_map[fd].getNick(), this->client_map[fd].getUser());
-
+    std::string msg = RPL_NICK(this->client_map[fd].getNick(), this->client_map[fd].getUser(), new_nick);
     std::set<int>   set_client = this->getClientChannel(fd);
+
+    set_client.insert(fd);
     for (std::set<int>::iterator it = set_client.begin(); it != set_client.end(); ++it)
     {
-        if(fd != *it) 
-            send(*it , msg.c_str(),  msg.length(), 0);
+        send(*it , msg.c_str(),  msg.length(), 0);
+        std::cout <<*it <<" msg" << msg << std::endl;
     }
-
-    delete_pfd(fd);
-    this->client_map.erase(fd);
-    close(fd);
+    this->client_map[fd].setNick(new_nick);
 }
-

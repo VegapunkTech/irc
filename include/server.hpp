@@ -62,7 +62,8 @@ class Server
         void            get_client_infos(std::string bufferstr, int fd);
         void            delete_pfd(int  fd);
         void            client_disconnect(int fd);
-        
+        bool            Nick_exist(std::string new_nick, int fd);
+        bool            User_exist(std::string new_user, int fd);
         //Mode
         void            mode(std::string channel_name, std::string signe, char mode , std::string arg, int fd);
         void            run_mode_l(std::string channel_name, std::string signe , std::string arg,int id_socket);
@@ -73,12 +74,15 @@ class Server
         int             find_client_id_channel(std::string channel_name, std::string client_kick);
         int             find_client_id(std::string client_invited);
         //Command
-        void            privmsg(std::string Channel, int id_socket, char *buffer);
+        void            privmsg_channel(std::string Channel, int id_socket, char *buffer);
+        void            privmsg_client(std::string client_name, int id_socket, char *buffer);
         void            join(std::string channel_name, int id_socket);
         std::set<int>   getClientChannel(int fd);
         void            kick(std::string channel_name, std::string client_kick, std::string rqt, int fd);
         void            invite(std::string channel_name, std::string invited_client, int fd);
-
+        void            topic(std::string channel_name, std::string topic , int fd);
+        void            part(std::string channel_name, int fd, char *buffer);
+        void            nick(std::string new_nick, int fd);
 
         int                                 _nSocket;
         int                                 _port;

@@ -13,6 +13,32 @@
 #include"utils.hpp"
 #include"../include/server.hpp"
 
+bool Server::Nick_exist(std::string new_nick, int fd)
+{
+    std::map<int, Client>::iterator it;
+
+    for (it = this->client_map.begin(); it != this->client_map.end(); ++it)
+    {
+        if(fd != it->first && it->second.getNick() == new_nick)
+            return(1);
+    }
+    return(0);
+}
+
+
+bool Server::User_exist(std::string new_user, int fd)
+{
+    std::map<int, Client>::iterator it;
+
+    for (it = this->client_map.begin(); it != this->client_map.end(); ++it)
+    {
+        if(fd != it->first && it->second.getUser() == new_user)
+            return(1);
+    }
+    return(0);
+}
+
+
 bool isSubstring(const std::string& str, const std::string& substring) 
 {
     return str.find(substring) != std::string::npos;
@@ -110,9 +136,16 @@ void Server::new_connection()
     recv(fd, buffer, sizeof(buffer), 0);
 
     //check pass
+    while(!isSubstring(std::string(buffer), "PASS ") && !isSubstring(std::string(buffer), "NICK ")) 
+    {
+        memset(&(buffer), 0, 2048);
+        recv(fd, buffer, sizeof(buffer), 0);
+    }
+
     if(!isSubstring(std::string(buffer), "PASS ")
         || wrong_pass(std::string(buffer), this->getPass()))
     {
+        std::cout << "WRONG pass word  : " << this->getPass() << std::endl << buffer << std::endl;
         std::string msg RPL_WRONG_PASS();
         send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
         this->delete_pfd(fd);
@@ -122,9 +155,17 @@ void Server::new_connection()
     //create instance client and get User and Nick
     this->get_client_infos(big_buffer, fd);
 
+    //get unique Nick
+    while(this->Nick_exist(this->client_map[fd].getNick() , fd))
+        this->client_map[fd].setNick(this->client_map[fd].getNick() + '_');
+
+    //get unique User
+    while(this->User_exist(this->client_map[fd].getUser(), fd))
+        this->client_map[fd].setUser(this->client_map[fd].getUser() + '_');
+
     //send welcome msg 
     std::string msg RPL_WELCOME(this->client_map[fd].getNick());
-    std::cout << std::endl << buffer << std::endl;
+    std::cout << "this is the new  : "<< fd << std::endl;
     send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
 
     //reset buffer
@@ -134,9 +175,3 @@ void Server::new_connection()
     recv(fd, buffer, sizeof(buffer), 0);
     memset(&(buffer), 0, 2048);
 }
-
-
-// recevoir decouper grace a /r
-//si mdp diffrent repondre faux
-//si nick n'est pas présent recevoir
-// 
