@@ -37,10 +37,32 @@ void Server::join(std::string channel_name, int id_socket)
     std::set<int> set_client;
     std::set<int> set_operator;
     std::set<int>::iterator it;
+    std::string msg;
 
     //check if channel name exist 
     if(this->channel_map.find(channel_name) !=  this->channel_map.end())
     {
+        std::set<int> set_cl = this->channel_map[channel_name].getClient_list();
+        std::set<int> set_cl_inv = this->channel_map[channel_name].getClient_list_invited();
+        //not invited 
+        if(this->channel_map[channel_name].getMode_i() == 1 &&
+            set_cl_inv.find(id_socket) == set_cl_inv.end())
+        {
+            std::string msg = RPL_JOIN_NOT_INVITED(this->client_map[id_socket].getNick(), channel_name);
+            send(id_socket, msg.c_str(), msg.length(), 0);
+            return;
+        }
+
+        std::cout << this->channel_map[channel_name].getMode_l() << " and " << set_cl.size() << " and " << this->channel_map[channel_name].getLimit() << std::endl;
+        //limit Max
+        if(this->channel_map[channel_name].getMode_l() == 1 &&
+           set_cl.size() == this->channel_map[channel_name].getLimit())
+        {
+            std::string msg = RPL_JOIN_LIMIT(this->client_map[id_socket].getNick(), channel_name);
+            send(id_socket, msg.c_str(), msg.length(), 0);
+            return;
+        }
+
         this->channel_map[channel_name].append_client(id_socket);
         this->client_map[id_socket].append_channel(channel_name);
     }
@@ -49,20 +71,34 @@ void Server::join(std::string channel_name, int id_socket)
     else
     {
         this->channel_map[channel_name].setName(channel_name);
+        this->channel_map[channel_name].setMode_t(1);
         this->channel_map[channel_name].append_client(id_socket);
         this->channel_map[channel_name].append_client_operator(id_socket);
         this->client_map[id_socket].append_channel(channel_name);
     }
 
+
+
     //send messages to clients
     set_client = this->channel_map[channel_name].getClient_list();
     set_operator = this->channel_map[channel_name].getClient_list_operator();
 
+    if(this->channel_map[channel_name].getTopic().length() > 0)
+    {
+        msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name) + \
+                RPL_JOIN_TOPIC(this->client_map[id_socket].getNick(), channel_name, this->channel_map[channel_name].getTopic()) + \
+                RPL_NAMREPLY(this->client_map[id_socket].getUser(), channel_name, this->format_users(set_client , set_operator)) + \
+                RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
+    }
+    else
+    {
+       msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name) + \
+                RPL_NAMREPLY(this->client_map[id_socket].getUser(), channel_name, this->format_users(set_client , set_operator)) + \
+                RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
+    }
+
     for (it = set_client.begin(); it != set_client.end(); ++it) 
     {
-        std::string msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name) + \
-                            RPL_NAMREPLY(this->client_map[id_socket].getUser(), channel_name, this->format_users(set_client , set_operator)) + \
-                                RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
         send(*it , msg.c_str(),  msg.length(), 0);
         std::cout << msg << std::endl;
     }

@@ -59,7 +59,6 @@ void Server::invite(std::string channel_name, std::string client_invited, int fd
     {
         msg = RPL_INVITE_RECV(this->client_map[fd].getNick(), this->client_map[fd].getUser(), client_invited, channel_name);
         send(fd_invited, msg.c_str(), msg.length() , 0);
-        std::cout << msg << std::endl;
     }
     return;
 }

@@ -99,6 +99,11 @@ bool Channel::getMode_l()
 }
 
 
+std::string Channel::getTopic()
+{
+    return(this->_topic);
+}
+
 
 
 
@@ -162,7 +167,10 @@ void Channel::setMode_l(bool n)
     this->_mode_l = n;
 }
 
-
+void Channel::setTopic(std::string topic)
+{
+    this->_topic = topic;
+}
 
 
 

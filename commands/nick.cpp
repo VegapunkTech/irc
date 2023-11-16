@@ -16,7 +16,6 @@
 
 void Server::nick(std::string new_nick, int fd)
 {
-    std::cout << "YES" << std::endl;
     //same nick
     if(this->client_map[fd].getNick() == new_nick)
         return;
@@ -26,7 +25,6 @@ void Server::nick(std::string new_nick, int fd)
         send(fd, msg.c_str(), msg.length(), 0);
         return;        
     }
-    std::cout << "YES" << std::endl;
 
     std::string msg = RPL_NICK(this->client_map[fd].getNick(), this->client_map[fd].getUser(), new_nick);
     std::set<int>   set_client = this->getClientChannel(fd);
@@ -35,7 +33,6 @@ void Server::nick(std::string new_nick, int fd)
     for (std::set<int>::iterator it = set_client.begin(); it != set_client.end(); ++it)
     {
         send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout <<*it <<" msg" << msg << std::endl;
     }
     this->client_map[fd].setNick(new_nick);
 }

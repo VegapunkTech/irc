@@ -45,6 +45,8 @@ class Channel
         std::string getName(); 
         std::string getPass();
         unsigned int getLimit();
+        std::string  getTopic();
+
         std::set<int> getClient_list();
         std::set<int> getClient_list_invited();
         std::set<int> getClient_list_operator();
@@ -61,7 +63,7 @@ class Channel
         void setMode_t(bool n);
         void setMode_k(bool n);
         void setMode_l(bool n);
-        
+        void setTopic(std::string topic);
         //append delete client 
         void append_client(int id_socket);
         void delete_client(int id_socket);

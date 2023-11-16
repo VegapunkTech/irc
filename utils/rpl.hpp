@@ -24,9 +24,20 @@
 
 */
 
-#define RPL_JOIN(Nick, User, Channel)            (std::string(":") + Nick + "!" + User + "@localhost JOIN :#" + Channel + "\r\n")                                                
-#define RPL_NAMREPLY(User, Channel, Users)            (std::string(":localhost 353 ") + User + " = " + Channel + " :" + Users + "\r\n")
-#define RPL_ENDOFNAMES(User, Channel)                 (std::string(":localhost 366 ") + User + " #" + Channel + " :End of /NAMES list.\r\n")
+#define RPL_JOIN(Nick, User, Channel)                 (std::string(":") + Nick + "!" + User + "@localhost JOIN :#" + Channel + "\r\n") 
+#define RPL_JOIN_TOPIC(Nick , Channel , Topic)        (std::string(":localhost 332 ") + Nick + " #" + Channel + " :" + Topic + "\r\n")                              
+#define RPL_NAMREPLY(Nick, Channel, Users)            (std::string(":localhost 353 ") + Nick + " = #" + Channel + " :" + Users + "\r\n")
+#define RPL_ENDOFNAMES(Nick, Channel)                 (std::string(":localhost 366 ") + Nick + " #" + Channel + " :End of /NAMES list.\r\n")
+
+
+
+//:underworld2.no.quakenet.org 473 youssef_ #re :Cannot join channel, you must be invited (+i)
+
+#define RPL_JOIN_NOT_INVITED(Nick, Channel)                  (std::string(":localhost 473 ") + Nick + " #" + Channel + " :Cannot join channel, you must be invited (+i)\r\n")
+
+//:tngnet.nl.quakenet.org 471 youssef_ #RE :Cannot join channel, Channel is full (+l)
+#define RPL_JOIN_LIMIT(Nick, Channel)                  (std::string(":localhost 471 ") + Nick + " #" + Channel + " :Cannot join channel, Channel is full (+l)\r\n")
+
 
 /*
 :test!youssef@localhost PRIVMSG #Channel :salut

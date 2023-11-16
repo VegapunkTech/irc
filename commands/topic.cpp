@@ -47,6 +47,6 @@ void Server::topic(std::string channel_name, std::string topic , int fd)
     {
         std::string msg = RPL_TOPIC(this->client_map[fd].getNick(), this->client_map[fd].getUser(), topic ,channel_name);
         send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
     }
+    this->channel_map[channel_name].setTopic(topic);
 }

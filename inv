@@ -3,11 +3,11 @@
 << USER youssef youssef irc.quakenet.org :Youssef
 >> NOTICE AUTH :*** Looking up your hostname
 >> NOTICE AUTH :*** Checking Ident
+>> NOTICE AUTH :*** Found your hostname
 >> :underworld2.no.quakenet.org 433 * youssef :Nickname is already in use.
 << NICK youssef_
->> PING :3939006913
-<< PONG :3939006913
->> NOTICE AUTH :*** Found your hostname
+>> PING :3789484240
+<< PONG :3789484240
 >> NOTICE AUTH :*** No ident response
 >> :underworld2.no.quakenet.org 001 youssef_ :Welcome to the QuakeNet IRC Network, youssef_
 << MODE youssef_ +i
@@ -17,10 +17,10 @@
 >> :underworld2.no.quakenet.org 004 youssef_ underworld2.no.quakenet.org u2.10.12.10+snircd(1.3.4a) dioswkgxRXInP biklmnopstvrDcCNuMT bklov
 >> :underworld2.no.quakenet.org 005 youssef_ WHOX WALLCHOPS WALLVOICES USERIP CPRIVMSG CNOTICE SILENCE=15 MODES=6 MAXCHANNELS=20 MAXBANS=45 NICKLEN=15 :are supported by this server
 >> :underworld2.no.quakenet.org 005 youssef_ MAXNICKLEN=15 TOPICLEN=250 AWAYLEN=160 KICKLEN=250 CHANNELLEN=200 MAXCHANNELLEN=200 CHANTYPES=#& PREFIX=(ov)@+ STATUSMSG=@+ CHANMODES=b,k,l,imnpstrDducCNMT CASEMAPPING=rfc1459 NETWORK=QuakeNet :are supported by this server
->> :underworld2.no.quakenet.org 251 youssef_ :There are 14 users and 6965 invisible on 21 servers
+>> :underworld2.no.quakenet.org 251 youssef_ :There are 14 users and 6998 invisible on 21 servers
 >> :underworld2.no.quakenet.org 252 youssef_ 43 :operator(s) online
->> :underworld2.no.quakenet.org 254 youssef_ 6896 :channels formed
->> :underworld2.no.quakenet.org 255 youssef_ :I have 640 clients and 1 servers
+>> :underworld2.no.quakenet.org 254 youssef_ 6883 :channels formed
+>> :underworld2.no.quakenet.org 255 youssef_ :I have 637 clients and 1 servers
 >> :underworld2.no.quakenet.org NOTICE youssef_ :Highest connection count: 1447 (1446 clients)
 >> :underworld2.no.quakenet.org 375 youssef_ :- underworld2.no.quakenet.org Message of the Day - 
 >> :underworld2.no.quakenet.org 372 youssef_ :- 2013-5-24 22:06
@@ -87,7 +87,7 @@
 >> :underworld2.no.quakenet.org 372 youssef_ :-   [ Have a nice stay! ]
 >> :underworld2.no.quakenet.org 372 youssef_ :- 
 >> :underworld2.no.quakenet.org 376 youssef_ :End of /MOTD command.
->> :underworld2.no.quakenet.org NOTICE youssef_ :on 2 ca 1(4) ft 20(20)
+>> :underworld2.no.quakenet.org NOTICE youssef_ :on 2 ca 2(4) ft 20(20)
 >> :underworld2.no.quakenet.org 221 youssef_ +i
 >> :youssef_!~youssef@66.225.88.79.rev.sfr.net MODE youssef_ +i
 >> :underworld2.no.quakenet.org 311 youssef_ youssef ~youssef 66.225.88.79.rev.sfr.net * :Youssef
@@ -98,31 +98,11 @@
 --> event empty
 >> :underworld2.no.quakenet.org 318 youssef_ youssef :End of /WHOIS list.
 --> event empty
+<< PING underworld2.no.quakenet.org
+>> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
+--> lag pong
 << JOIN #re
->> :youssef_!~youssef@66.225.88.79.rev.sfr.net JOIN #re
->> :underworld2.no.quakenet.org 332 youssef_ #re :lol
->> :underworld2.no.quakenet.org 333 youssef_ #re youssef 1700159230
->> :underworld2.no.quakenet.org 353 youssef_ = #re :youssef_ @youssef
->> :underworld2.no.quakenet.org 366 youssef_ #re :End of /NAMES list.
-<< MODE #re
->> :underworld2.no.quakenet.org 324 youssef_ #re +tnCN 
---> chanquery mode
-<< WHO #re
->> :underworld2.no.quakenet.org 329 youssef_ #re 1700159197
---> event 329
->> :underworld2.no.quakenet.org 352 youssef_ #re ~youssef 66.225.88.79.rev.sfr.net *.quakenet.org youssef_ H :0 Youssef
---> silent event who
->> :underworld2.no.quakenet.org 352 youssef_ #re ~youssef 66.225.88.79.rev.sfr.net *.quakenet.org youssef H@ :3 Youssef
---> silent event who
->> :underworld2.no.quakenet.org 315 youssef_ #re :End of /WHO list.
---> chanquery who end
-<< MODE #re b
->> :underworld2.no.quakenet.org 368 youssef_ #re :End of Channel Ban List
---> chanquery ban end
-<< PING underworld2.no.quakenet.org
->> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
---> lag pong
-<< PRIVMSG #re :lol
+>> :underworld2.no.quakenet.org 473 youssef_ #re :Cannot join channel, you must be invited (+i)
 << PING underworld2.no.quakenet.org
 >> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
 --> lag pong
@@ -135,9 +115,4 @@
 << PING underworld2.no.quakenet.org
 >> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
 --> lag pong
-<< PING underworld2.no.quakenet.org
->> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
---> lag pong
-<< PING underworld2.no.quakenet.org
->> :underworld2.no.quakenet.org PONG underworld2.no.quakenet.org :underworld2.no.quakenet.org
---> lag pong
+<< QUIT :leaving
