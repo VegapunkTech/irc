@@ -102,15 +102,41 @@ void Server::parser(char *buffer, int fd)
         std::string bufferstr(buffer);
 
         size_t posspace = bufferstr.find(' ', 6);
+        if (posspace != std::string::npos) {
+
+            std::string channelname = bufferstr.substr(6, posspace - 6);
+
+            size_t posspace2 = bufferstr.find(' ', posspace+1);
+            if (posspace2 != std::string::npos) {
+
+                std::string pseudo = bufferstr.substr(posspace+1, posspace2 - posspace-1);
+
+                if ((bufferstr[posspace2+1] == ':') && (bufferstr[posspace2+2] == '\r'))
+                {
+                    bufferstr = bufferstr.substr(0, bufferstr.size() - 2);
+                    bufferstr+=this->client_map[fd].getNick();
+                }
+                this->kick(channelname, pseudo , bufferstr, fd);
+            }  
+        }
+    }
+
+    //INVITE
+    if(strncmp(buffer, "INVITE ", 7) == 0) 
+    {
+        std::string bufferstr(buffer);
+
+        size_t posspace = bufferstr.find(' ', 8);
         if (posspace != std::string::npos) 
         {
-            std::string channelname = bufferstr.substr(6, posspace - 6);
-            size_t posspace2 = bufferstr.find(' ', posspace+1);
+            std::string pseudo = bufferstr.substr(7, posspace - 7);
+
+            size_t posspace2 = bufferstr.find('\r', posspace);
             if (posspace2 != std::string::npos) 
             {
-                std::string pseudo = bufferstr.substr(posspace+1, posspace2 - posspace-1);
-                this->kick(channelname, pseudo,bufferstr , fd);
-            }   
+                std::string channelname = bufferstr.substr(posspace+2, posspace2 - posspace-2);
+                this->invite( channelname,pseudo , fd);
+            }
         }
     }
 }

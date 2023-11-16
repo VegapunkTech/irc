@@ -63,4 +63,14 @@
 //:youssef!~youssef@66.225.88.79.rev.sfr.net KICK #re youssef_ :youssef
 #define RPL_KICK(Nick, User, msg)                 (std::string(":") + Nick + "!~" + User + " "+ msg +"\r\n");
 
+
+//:adrift.sg.quakenet.org 401 youssef testpote :No such nick
+//send     //:adrift.sg.quakenet.org 341 youssef tes1 #re 
+//rev      //:youssef!~youssef@66.225.88.79.rev.sfr.net INVITE tes1 #re
+
+#define RPL_INVITE_NO(Nick, Invite)                        (std::string(":127.0.0.1 401 ") + Nick + " " + Invite + " :No such nick\r\n");
+#define RPL_INVITE_SEND(Nick, Invite, Channel)             (std::string(":127.0.0.1 341 ") + Nick + " " + Invite + " #"+ Channel + "\r\n")
+#define RPL_INVITE_RECV(Nick, User, Invite ,Channel)       (std::string(":") + Nick + "!~" + User + "@localhost INVITE " + Invite + " "+ Channel +"\r\n") 
+
+
 #endif

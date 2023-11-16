@@ -71,12 +71,13 @@ class Server
         void            run_mode_t(std::string channel_name, std::string signe, int id_socket);
         void            run_mode_i(std::string channel_name, std::string signe, int id_socket);
         int             find_client_id_channel(std::string channel_name, std::string client_kick);
-
+        int             find_client_id(std::string client_invited);
         //Command
         void            privmsg(std::string Channel, int id_socket, char *buffer);
         void            join(std::string channel_name, int id_socket);
         std::set<int>   getClientChannel(int fd);
         void            kick(std::string channel_name, std::string client_kick, std::string rqt, int fd);
+        void            invite(std::string channel_name, std::string invited_client, int fd);
 
 
         int                                 _nSocket;
