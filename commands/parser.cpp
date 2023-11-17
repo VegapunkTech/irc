@@ -19,13 +19,28 @@ void Server::parser(char *buffer, int fd)
     std::string bufferstr(buffer);
 
     //JOIN
-    if(strncmp(buffer, "JOIN ", 5) == 0)
+if(strncmp(buffer, "JOIN ", 5) == 0)
     {
-        size_t posNewline = bufferstr.find('\n', 5);
+
+        size_t posNewline = bufferstr.find_first_of("\r\n ", 6);
         if (posNewline != std::string::npos) 
         {
-            std::string channelname = bufferstr.substr(6, posNewline - 7);
-            this->join(channelname, fd);
+            std::string channelname = bufferstr.substr(6, posNewline - 6);
+
+            if (bufferstr[posNewline] == '\r' || bufferstr[posNewline] == '\n' ||bufferstr[posNewline] == '\0')
+            {
+                join(channelname, fd, std::string(""));
+            }
+            else 
+            {
+                size_t posNewline2 = bufferstr.find_first_of("\r\n ", posNewline+1);
+                if (posNewline2 != std::string::npos) 
+                {
+                    std::string password = bufferstr.substr(posNewline+1, posNewline2 - posNewline-1);
+                    join(channelname, fd, password);
+                }
+
+            }
         }
     }
 
@@ -62,7 +77,7 @@ void Server::parser(char *buffer, int fd)
             std::string arg;
             std::string signe;
 
-            size_t test = bufferstr.find('\r', posspace+1);
+            size_t test = bufferstr.find_first_of("\r\n", posspace+1);
             if (posspace != std::string::npos) 
             {
 
@@ -120,7 +135,7 @@ void Server::parser(char *buffer, int fd)
 
                 std::string pseudo = bufferstr.substr(posspace+1, posspace2 - posspace-1);
 
-                if ((bufferstr[posspace2+1] == ':') && (bufferstr[posspace2+2] == '\r'))
+                if ((bufferstr[posspace2+1] == ':') && (bufferstr[posspace2+2] == '\r' || bufferstr[posspace2+2] == '\n'))
                 {
                     bufferstr = bufferstr.substr(0, bufferstr.size() - 2);
                     bufferstr+=this->client_map[fd].getNick();
@@ -140,7 +155,7 @@ void Server::parser(char *buffer, int fd)
         {
             std::string pseudo = bufferstr.substr(7, posspace - 7);
 
-            size_t posspace2 = bufferstr.find('\r', posspace);
+            size_t posspace2 = bufferstr.find_first_of("\r\n", posspace);
             if (posspace2 != std::string::npos) 
             {
                 std::string channelname = bufferstr.substr(posspace+2, posspace2 - posspace-2);
@@ -159,7 +174,7 @@ void Server::parser(char *buffer, int fd)
 
             std::string channelname = bufferstr.substr(7, posspace - 7);
 
-            size_t posspace2 = bufferstr.find('\r', posspace+1);
+            size_t posspace2 = bufferstr.find_first_of("\r\n", posspace+1);
             if (posspace2 != std::string::npos) 
             {
                 std::string topic = bufferstr.substr(posspace+2, posspace2 - posspace-2);
@@ -187,7 +202,7 @@ void Server::parser(char *buffer, int fd)
         }
         else
         {
-            size_t posspace = bufferstr.find('\r', 5);
+            size_t posspace = bufferstr.find_first_of("\r\n", 5);
             std::string channelname = bufferstr.substr(5, posspace - 5);
             if (channelname[0] == '#')
             {
@@ -200,9 +215,9 @@ void Server::parser(char *buffer, int fd)
     }
 
     //Nick
-       if(strncmp(buffer, "NICK ", 5) == 0)
+    if(strncmp(buffer, "NICK ", 5) == 0)
     {
-        size_t posspace = bufferstr.find('\r', 5);
+        size_t posspace = bufferstr.find_first_of("\r\n", 5);
         if (posspace != std::string::npos) 
         {
             std::string nick = bufferstr.substr(5, posspace - 5);

@@ -32,7 +32,7 @@ std::string Server::format_users(std::set<int> set_client, std::set<int> set_ope
 }
 
 
-void Server::join(std::string channel_name, int id_socket)
+void Server::join(std::string channel_name, int id_socket, std::string pass)
 {
     std::set<int> set_client;
     std::set<int> set_operator;
@@ -59,6 +59,15 @@ void Server::join(std::string channel_name, int id_socket)
            set_cl.size() == this->channel_map[channel_name].getLimit())
         {
             std::string msg = RPL_JOIN_LIMIT(this->client_map[id_socket].getNick(), channel_name);
+            send(id_socket, msg.c_str(), msg.length(), 0);
+            return;
+        }
+
+        //bad pass
+        if(this->channel_map[channel_name].getMode_k() == 1 &&
+           pass != this->channel_map[channel_name].getPass())
+        {
+            std::string msg = RPL_JOIN_BAD_PASS(this->client_map[id_socket].getNick(), channel_name);
             send(id_socket, msg.c_str(), msg.length(), 0);
             return;
         }

@@ -50,37 +50,47 @@ bool wrong_pass(std::string bufferstr, std::string pass_srv)
     size_t posPass = bufferstr.find("PASS ");
     if (posPass != std::string::npos) 
     {
-        size_t posNewline = bufferstr.find('\n', posPass);
+        size_t posNewline = bufferstr.find_first_of("\r\n", posPass);
         if (posNewline != std::string::npos)
-            pass_cl = bufferstr.substr(posPass + 5, posNewline - (posPass + 6));
+            pass_cl = bufferstr.substr(posPass + 5, posNewline - (posPass + 5));
     }
+    std::cout << "client password " << pass_cl << std::endl;
     if(pass_cl != pass_srv)
         return(1);
     return(0);
 }
 
 void Server::get_client_infos(std::string bufferstr, int fd)
-{
+{ 
     this->client_map[fd].setIdSocket(fd);
 
     size_t posNick = bufferstr.find("NICK ");
     if (posNick != std::string::npos) {
-        size_t posNewline = bufferstr.find('\n', posNick);
+        size_t posNewline = bufferstr.find_first_of("\r\n", posNick);
         if (posNewline != std::string::npos) {
-            std::string nick = bufferstr.substr(posNick + 5, posNewline - (posNick + 6));
+            std::string nick = bufferstr.substr(posNick + 5, posNewline - (posNick + 5));
             this->client_map[fd].setNick(nick);
         }
     }
 
     size_t posUser = bufferstr.find("USER ");
     if (posUser != std::string::npos) {
-        size_t posNewline = bufferstr.find('\n', posUser);
-        if (posNewline != std::string::npos) {
+        size_t posNewline = bufferstr.find_first_of("\r\n", posUser);
+        if (posNewline != std::string::npos) 
+        {
             std::string user = bufferstr.substr(posUser + 5, posNewline - (posUser + 5));
-            size_t test = user.find(' ', 0);
-            if (test != std::string::npos) {
+            std::cout << "all infos : +0"<< user << "0+" << std::endl;
+            size_t test = user.find_first_of(" ", 0);
+            if (test != std::string::npos) 
+            {
                 std::string user1 = user.substr(0, test);
+                std::cout << "all infos : top "<< user1 << std::endl;
                 this->client_map[fd].setUser(user1);
+            }
+            else
+            {
+                std::cout << "all infos : top "<< user << std::endl;
+                this->client_map[fd].setUser(user);
             }
         }
     }
@@ -122,7 +132,7 @@ void Server::new_connection()
     int         fd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
-
+    std::cout << "this is the connection " << std::endl;
     fd = accept(this->_nSocket, (sockaddr *) &addr, &size);
     if (fd < 0)
         throw std::runtime_error("Error while accepting a new client!");
@@ -130,11 +140,10 @@ void Server::new_connection()
     // including the client fd in the poll
     pollfd  pfd = {fd, POLLIN, 0};
     this->_pfds.push_back(pfd);
-
     //recv first msg from the client
     char buffer[2048];
     recv(fd, buffer, sizeof(buffer), 0);
-
+    std::cout << "after recv msg : +0"<< buffer << "+0" << std::endl;
     //check pass
     while(!isSubstring(std::string(buffer), "PASS ") && !isSubstring(std::string(buffer), "NICK ")) 
     {
@@ -165,7 +174,6 @@ void Server::new_connection()
 
     //send welcome msg 
     std::string msg RPL_WELCOME(this->client_map[fd].getNick());
-    std::cout << "this is the new  : "<< fd << std::endl;
     send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
 
     //reset buffer

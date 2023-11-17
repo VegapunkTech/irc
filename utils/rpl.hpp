@@ -38,6 +38,9 @@
 //:tngnet.nl.quakenet.org 471 youssef_ #RE :Cannot join channel, Channel is full (+l)
 #define RPL_JOIN_LIMIT(Nick, Channel)                  (std::string(":localhost 471 ") + Nick + " #" + Channel + " :Cannot join channel, Channel is full (+l)\r\n")
 
+//:hostsailor.ro.quakenet.org 475 youssef #re :Cannot join channel, you need the correct key (+k)
+#define RPL_JOIN_BAD_PASS(Nick, Channel)                  (std::string(":localhost 475 ") + Nick + " #" + Channel + " :Cannot join channel, you need the correct key (+k)\r\n")
+
 
 /*
 :test!youssef@localhost PRIVMSG #Channel :salut

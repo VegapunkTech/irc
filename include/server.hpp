@@ -76,7 +76,7 @@ class Server
         //Command
         void            privmsg_channel(std::string Channel, int id_socket, char *buffer);
         void            privmsg_client(std::string client_name, int id_socket, char *buffer);
-        void            join(std::string channel_name, int id_socket);
+        void            join(std::string channel_name, int id_socket, std::string pass);
         std::set<int>   getClientChannel(int fd);
         void            kick(std::string channel_name, std::string client_kick, std::string rqt, int fd);
         void            invite(std::string channel_name, std::string invited_client, int fd);

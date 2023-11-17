@@ -20,10 +20,10 @@ void Server::topic(std::string channel_name, std::string topic , int fd)
     std::set<int>::iterator it;
     std::set<int> set_cl = this->channel_map[channel_name].getClient_list();
     std::set<int> set_cl_op = this->channel_map[channel_name].getClient_list_operator();
+
     //channel exit
     if(this->channel_map.find(channel_name) == this->channel_map.end())
         return;
-
 
 
     //Client in channel 
