@@ -142,13 +142,21 @@ void Server::new_connection()
     this->_pfds.push_back(pfd);
     //recv first msg from the client
     char buffer[2048];
-    recv(fd, buffer, sizeof(buffer), 0);
+    if(recv(fd, buffer, sizeof(buffer), 0) <= 0)
+    {
+        close(fd);
+        return;
+    };
     std::cout << "after recv msg : +0"<< buffer << "+0" << std::endl;
     //check pass
     while(!isSubstring(std::string(buffer), "PASS ") && !isSubstring(std::string(buffer), "NICK ")) 
     {
         memset(&(buffer), 0, 2048);
-        recv(fd, buffer, sizeof(buffer), 0);
+        if(recv(fd, buffer, sizeof(buffer), 0) <= 0)
+        {
+            close(fd);
+            return;
+        };
     }
 
     if(!isSubstring(std::string(buffer), "PASS ")
@@ -157,6 +165,7 @@ void Server::new_connection()
         std::cout << "WRONG pass word  : " << this->getPass() << std::endl << buffer << std::endl;
         std::string msg RPL_WRONG_PASS();
         send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
+        close(fd);
         this->delete_pfd(fd);
         return;
     }
@@ -180,6 +189,12 @@ void Server::new_connection()
     memset(&(buffer), 0, 2048);
 
     //a gerer plus tard le mode user au moment de la connection
-    recv(fd, buffer, sizeof(buffer), 0);
-    memset(&(buffer), 0, 2048);
+    /*recv(fd, buffer, sizeof(buffer), 0);
+    memset(&(buffer), 0, 2048);*/
 }
+
+
+
+
+
+

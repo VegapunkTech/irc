@@ -19,19 +19,20 @@ void Server::parser(char *buffer, int fd)
     std::string bufferstr(buffer);
 
     //JOIN
-if(strncmp(buffer, "JOIN ", 5) == 0)
+    if(strncmp(buffer, "JOIN ", 5) == 0)
     {
-
-        size_t posNewline = bufferstr.find_first_of("\r\n ", 6);
+        size_t posNewline = bufferstr.find_first_of("\r\n ", 5);
         if (posNewline != std::string::npos) 
         {
-            std::string channelname = bufferstr.substr(6, posNewline - 6);
+            std::string channelname = bufferstr.substr(5, posNewline - 5);
+            if (channelname[0] == '#')
+                    channelname.erase(channelname.begin());
 
             if (bufferstr[posNewline] == '\r' || bufferstr[posNewline] == '\n' ||bufferstr[posNewline] == '\0')
             {
                 join(channelname, fd, std::string(""));
             }
-            else 
+            else
             {
                 size_t posNewline2 = bufferstr.find_first_of("\r\n ", posNewline+1);
                 if (posNewline2 != std::string::npos) 
@@ -71,7 +72,8 @@ if(strncmp(buffer, "JOIN ", 5) == 0)
         size_t posspace = bufferstr.find(' ', 6);
         if (posspace != std::string::npos) 
         {
-
+            if(bufferstr[5] != '#')
+                return;
             std::string channelname = bufferstr.substr(6, posspace - 6);
             std::string command;
             std::string arg;

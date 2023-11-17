@@ -59,11 +59,27 @@ std::string Server::getPass(void) const
 void Server::manage_cl_msg(int fd)
 {     
     char buffer[2048];
-    recv(fd, buffer, sizeof(buffer), 0);
+    if(recv(fd, buffer, sizeof(buffer), 0) <=0)
+    {
+        this->client_disconnect(fd);
+        return;
+    }
     this->parser(buffer, fd);
     std::cout << buffer << std::endl;
     memset(&(buffer), 0, 2048);
 }
+
+
+
+volatile sig_atomic_t interrupted = 0;
+
+void signalHandler(int signum) {
+    if (signum == SIGINT) {
+        std::cout << "CTRL+C detected. Cleaning up..." << std::endl;
+        interrupted = 1;
+    }
+}
+
 
 void Server::run(void)
 {
@@ -83,7 +99,7 @@ void Server::run(void)
             if (it->revents == 0)
                 continue;
 
-            if ((it->revents & POLLHUP) == POLLHUP)
+            if ((it->revents & POLLOUT) || (it->revents & POLLERR))
             {
                 this->client_disconnect(it->fd);
                 break;
@@ -97,7 +113,6 @@ void Server::run(void)
                    this->new_connection();
                    break;
                 }
-
                 this->manage_cl_msg(it->fd);
             }
         }

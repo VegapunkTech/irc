@@ -3,6 +3,7 @@
 
 int main(int ac, char **av)
 {
+    //signal(SIGINT, signalHandler);
     if(ac != 3)
     {
         std::cout << "Error : The number of arguments must be equal to 2 !" <<std::endl;

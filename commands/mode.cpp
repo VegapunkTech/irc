@@ -193,6 +193,7 @@ void Server::run_mode_l(std::string channel_name, std::string signe , std::strin
 
 void Server::mode(std::string channel_name, std::string signe, char mode , std::string arg, int fd)
 {
+    std::cout << channel_name << " : " << signe << " : " << mode << " : " << arg << std::endl;
     std::set<int> set_cl = this->channel_map[channel_name].getClient_list_operator();
 
     if(this->channel_map.find(channel_name) == this->channel_map.end())

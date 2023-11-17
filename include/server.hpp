@@ -34,6 +34,8 @@
 #include <list>
 #include <map>
 #include <set>
+#include <csignal>
+#include <cstdlib>
 
 #define SRV_IP "127.0.0.1"
 
@@ -93,5 +95,5 @@ class Server
         std::vector<pollfd>                 _pfds;
 };
 
-
+void signalHandler(int signum);
 #endif
