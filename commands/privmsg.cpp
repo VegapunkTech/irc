@@ -21,7 +21,6 @@ void Server::privmsg_channel(std::string channel_name, int id_socket, char *buff
     {
         std::string msg = RPL_PRIVMSG_NO_CHANNEL(this->client_map[id_socket].getNick() , channel_name);
         send(id_socket, msg.c_str(), msg.length(), 0);
-        std::cout << msg << std::endl;
         return;
     }
 
@@ -37,7 +36,6 @@ void Server::privmsg_channel(std::string channel_name, int id_socket, char *buff
 
         std::string msg = RPL_PRIVMSG_CHANNEL(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , buffer);
         send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
     }
 }
 
@@ -49,7 +47,6 @@ void Server::privmsg_client(std::string client_name, int id_socket, char *buffer
     {
         std::string msg = RPL_PRIVMSG_NO_CLIENT(this->client_map[id_socket].getNick() , client_name);
         send(id_socket, msg.c_str(), msg.length(), 0);
-        std::cout << msg << std::endl;
         return;
     }
 
@@ -57,6 +54,5 @@ void Server::privmsg_client(std::string client_name, int id_socket, char *buffer
     int id_client = this->find_client_id(client_name);
     std::string msg = RPL_PRIVMSG_CLIENT(this->client_map[id_socket].getNick() , this->client_map[id_socket].getUser() , buffer);
     send(id_client, msg.c_str(), msg.length(), 0);
-    std::cout << msg << std::endl;
     return;
 }

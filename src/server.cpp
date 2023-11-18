@@ -16,13 +16,11 @@
 
 Server::Server(int port, std::string pass) : _port(port), _pass(pass)
 {
-    std::cout << "Server created" << std::endl;
     return;
 }
 
 Server::~Server( void )
 {
-    std::cout << "Server deleted" << std::endl;
     return;
 }
 
@@ -61,12 +59,12 @@ void Server::manage_cl_msg(int fd)
     char buffer[2048];
     if(recv(fd, buffer, sizeof(buffer), 0) <=0)
     {
+        std::cout << "Error : "<<buffer <<std::endl;
+
         this->client_disconnect(fd);
         return;
     }
     this->parser(buffer, fd);
-    std::cout << buffer << std::endl;
-    memset(&(buffer), 0, 2048);
 }
 
 
@@ -74,8 +72,9 @@ void Server::manage_cl_msg(int fd)
 volatile sig_atomic_t interrupted = 0;
 
 void signalHandler(int signum) {
-    if (signum == SIGINT) {
-        std::cout << "CTRL+C detected. Cleaning up..." << std::endl;
+    if (signum == SIGINT) 
+    {
+
         interrupted = 1;
     }
 }

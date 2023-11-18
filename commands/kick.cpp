@@ -42,7 +42,6 @@ void Server::kick(std::string channel_name, std::string client_kick, std::string
 
     if(set_cl.find(fd_kick) == set_cl.end())
     {
-        std::cout << "ici 2 : "<< fd_kick <<" " <<  client_kick<< std::endl;
         return;
     }
     //send msg

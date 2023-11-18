@@ -43,17 +43,14 @@ void Server::invite(std::string channel_name, std::string client_invited, int fd
     int fd_invited = this->find_client_id(client_invited);
     if(fd_invited == -1)
     {
-        std::cout << "not found" << std::endl;
         std::string msg= RPL_INVITE_NO(this->client_map[fd].getNick(), client_invited);
         send(fd, msg.c_str(), msg.length() , 0);
         return;
     }
-    std::cout << "found" << std::endl;
     this->channel_map[channel_name].append_client_invited(fd_invited);
 
     std::string msg= RPL_INVITE_SEND(this->client_map[fd].getNick(), client_invited, channel_name);
     send(fd, msg.c_str(), msg.length() , 0);
-    std::cout << msg << std::endl;
 
     if((set_cl.find(fd_invited) == set_cl.end()))
     {

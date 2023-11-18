@@ -98,7 +98,6 @@ void Server::parser(char *buffer, int fd)
                         signe = command[i];
                     else
                     {
-                        std::cout << "ici se trouvve bug " << std::endl;
                         if (command[i] == 'o' || command[i] == 'l' ||command[i] == 'k')
                             this->mode(channelname, signe, command[i] , arg , fd);
                         else
@@ -110,12 +109,12 @@ void Server::parser(char *buffer, int fd)
     }
 
     //QUIT
-    if(strncmp(buffer, "QUIT " , 5) == 0)
+    if(strncmp(buffer, "QUIT :leaving" , 13) == 0)
         this->client_disconnect(fd);
 
 
     //PING
-    if(strncmp(buffer, "PING " , 5) == 0)
+    if(strncmp(buffer, "PING 127.0.0.1" , 13) == 0)
     {
         std::string msg = RPL_PONG();
         send(fd , msg.c_str(),  msg.length(), 0);

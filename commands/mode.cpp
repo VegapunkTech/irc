@@ -32,7 +32,6 @@ void Server::run_mode_i(std::string channel_name, std::string signe, int id_sock
         for (it = set_client.begin(); it != set_client.end(); ++it) 
         {
             std::string msg = RPL_MODE_I(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , channel_name , signe);
-            std::cout << msg << std::endl;
             send(*it , msg.c_str(),  msg.length(), 0);
         }
     }
@@ -58,7 +57,6 @@ void Server::run_mode_t(std::string channel_name, std::string signe, int id_sock
         for (it = set_client.begin(); it != set_client.end(); ++it) 
         {
             std::string msg = RPL_MODE_T(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , channel_name , signe);
-            std::cout << msg << std::endl;
             send(*it , msg.c_str(),  msg.length(), 0);
         }
     }
@@ -93,7 +91,6 @@ void Server::run_mode_k(std::string channel_name, std::string signe , std::strin
         for (it = set_client.begin(); it != set_client.end(); ++it) 
         {
             std::string msg = RPL_MODE_K(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , channel_name , signe, arg);
-            std::cout << msg << std::endl;
             send(*it , msg.c_str(),  msg.length(), 0);
         }
     }
@@ -116,15 +113,12 @@ void Server::run_mode_o(std::string channel_name, std::string signe , std::strin
         if( this->client_map[*it].getNick() == arg)
             fd = *it;
     }
-    std::cout << "entre boucle " << std::endl;
     if(fd == -1)
         return;
-    std::cout << "entre boucle " << std::endl;
     std::set<int> set_client_op = this->channel_map[channel_name].getClient_list_operator();
 
     if((strncmp(signe.c_str(), "+", 1) == 0 ) && (set_client_op.find(fd) == set_client_op.end()))
     {
-        std::cout << "entre boucle if " << std::endl;
         this->channel_map[channel_name].append_client_operator(fd);
         send_msg = 1;
     }
@@ -142,7 +136,6 @@ void Server::run_mode_o(std::string channel_name, std::string signe , std::strin
         for (it = set_client.begin(); it != set_client.end(); ++it) 
         {
             std::string msg = RPL_MODE_O(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() , channel_name , signe, arg);
-            std::cout << msg << std::endl;
             send(*it , msg.c_str(),  msg.length(), 0);
         }
     }
@@ -183,7 +176,6 @@ void Server::run_mode_l(std::string channel_name, std::string signe , std::strin
         {
             std::string msg = RPL_MODE_L(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser() 
                 , channel_name , signe, arg);
-            std::cout << msg << std::endl;
             send(*it , msg.c_str(),  msg.length(), 0);
         }
     }
@@ -193,7 +185,6 @@ void Server::run_mode_l(std::string channel_name, std::string signe , std::strin
 
 void Server::mode(std::string channel_name, std::string signe, char mode , std::string arg, int fd)
 {
-    std::cout << channel_name << " : " << signe << " : " << mode << " : " << arg << std::endl;
     std::set<int> set_cl = this->channel_map[channel_name].getClient_list_operator();
 
     if(this->channel_map.find(channel_name) == this->channel_map.end())

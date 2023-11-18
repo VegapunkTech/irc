@@ -52,8 +52,6 @@ void Server::join(std::string channel_name, int id_socket, std::string pass)
             send(id_socket, msg.c_str(), msg.length(), 0);
             return;
         }
-
-        std::cout << this->channel_map[channel_name].getMode_l() << " and " << set_cl.size() << " and " << this->channel_map[channel_name].getLimit() << std::endl;
         //limit Max
         if(this->channel_map[channel_name].getMode_l() == 1 &&
            set_cl.size() == this->channel_map[channel_name].getLimit())
@@ -106,9 +104,12 @@ void Server::join(std::string channel_name, int id_socket, std::string pass)
                 RPL_ENDOFNAMES(this->client_map[id_socket].getUser(), channel_name);
     }
 
+    send(id_socket , msg.c_str(),  msg.length(), 0);
+    msg = RPL_JOIN(this->client_map[id_socket].getNick(), this->client_map[id_socket].getUser(), channel_name);
     for (it = set_client.begin(); it != set_client.end(); ++it) 
     {
+        if(*it == id_socket)
+            continue;
         send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
     }
 }

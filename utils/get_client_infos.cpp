@@ -54,7 +54,6 @@ bool wrong_pass(std::string bufferstr, std::string pass_srv)
         if (posNewline != std::string::npos)
             pass_cl = bufferstr.substr(posPass + 5, posNewline - (posPass + 5));
     }
-    std::cout << "client password " << pass_cl << std::endl;
     if(pass_cl != pass_srv)
         return(1);
     return(0);
@@ -79,17 +78,14 @@ void Server::get_client_infos(std::string bufferstr, int fd)
         if (posNewline != std::string::npos) 
         {
             std::string user = bufferstr.substr(posUser + 5, posNewline - (posUser + 5));
-            std::cout << "all infos : +0"<< user << "0+" << std::endl;
             size_t test = user.find_first_of(" ", 0);
             if (test != std::string::npos) 
             {
                 std::string user1 = user.substr(0, test);
-                std::cout << "all infos : top "<< user1 << std::endl;
                 this->client_map[fd].setUser(user1);
             }
             else
             {
-                std::cout << "all infos : top "<< user << std::endl;
                 this->client_map[fd].setUser(user);
             }
         }
@@ -122,7 +118,6 @@ std::string get_all_infos(char *buffer, int fd)
         big_buffer += buffer_tmp;
         memset(&(buffer_tmp), 0, 2048);
     }
-
     return(big_buffer);
 }
 
@@ -132,7 +127,7 @@ void Server::new_connection()
     int         fd;
     sockaddr_in addr = {};
     socklen_t   size = sizeof(addr);
-    std::cout << "this is the connection " << std::endl;
+
     fd = accept(this->_nSocket, (sockaddr *) &addr, &size);
     if (fd < 0)
         throw std::runtime_error("Error while accepting a new client!");
@@ -147,7 +142,7 @@ void Server::new_connection()
         close(fd);
         return;
     };
-    std::cout << "after recv msg : +0"<< buffer << "+0" << std::endl;
+
     //check pass
     while(!isSubstring(std::string(buffer), "PASS ") && !isSubstring(std::string(buffer), "NICK ")) 
     {
@@ -162,7 +157,6 @@ void Server::new_connection()
     if(!isSubstring(std::string(buffer), "PASS ")
         || wrong_pass(std::string(buffer), this->getPass()))
     {
-        std::cout << "WRONG pass word  : " << this->getPass() << std::endl << buffer << std::endl;
         std::string msg RPL_WRONG_PASS();
         send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
         close(fd);
@@ -185,12 +179,6 @@ void Server::new_connection()
     std::string msg RPL_WELCOME(this->client_map[fd].getNick());
     send(fd, msg.c_str(), strlen(msg.c_str()) , 0);
 
-    //reset buffer
-    memset(&(buffer), 0, 2048);
-
-    //a gerer plus tard le mode user au moment de la connection
-    /*recv(fd, buffer, sizeof(buffer), 0);
-    memset(&(buffer), 0, 2048);*/
 }
 
 

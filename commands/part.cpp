@@ -30,7 +30,6 @@ void Server::part(std::string channel_name, int fd, char *buffer)
     {
         std::string msg = RPL_PART(this->client_map[fd].getNick(), this->client_map[fd].getUser() , buffer);
         send(*it , msg.c_str(),  msg.length(), 0);
-        std::cout << msg << std::endl;
     }
 
 

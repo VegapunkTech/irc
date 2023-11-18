@@ -14,19 +14,16 @@
 
 Client::Client( void )
 {
-    std::cout << "Client created" << std::endl;
     return;
 }
 
 Client::~Client(void)
 {
-    std::cout << "Client deleted" << std::endl;
     return;
 }
 
 Client::Client(int id_socket) :_id_socket(id_socket)
 {
-    std::cout << "Client created with id" << std::endl;
     return;
 }
 
@@ -35,7 +32,6 @@ Client::Client(int id_socket) :_id_socket(id_socket)
 Client::Client( Client const & src ) 
 {
     *this = src;
-    std::cout << "Client created by copy" << std::endl;
 }
 
 Client&   Client::operator=( const Client& rhs ) 
@@ -43,7 +39,6 @@ Client&   Client::operator=( const Client& rhs )
 
     this->_id_socket = rhs._id_socket;
 
-    std::cout << "Client created by affectation" << std::endl;
     return *this;
 }
 

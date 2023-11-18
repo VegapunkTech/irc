@@ -14,19 +14,16 @@
 
 Channel::Channel( void ) : _mode_i(0), _mode_t(0), _mode_k(0), _mode_l(0)
 {
-    std::cout << "Channel Created" << std::endl;
     return;
 }
 
 Channel::~Channel(void)
 {
-    std::cout << "Channel deleted" << std::endl;
     return;
 }
 
 Channel::Channel(std::string name) :_name(name), _mode_i(0), _mode_t(0), _mode_k(0), _mode_l(0)
 {
-    std::cout << "Channel "<< name << " created" << std::endl;
     return;
 }
 
